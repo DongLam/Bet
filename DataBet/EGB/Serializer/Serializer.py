@@ -9,4 +9,5 @@ class MatchSerializer(serializers.ModelSerializer):
         fields = ('team1',
                   'team2',
                   'odds1',
-                  'odds2')
+                  'odds2',
+                  'site')

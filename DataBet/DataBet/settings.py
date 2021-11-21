@@ -81,7 +81,7 @@ DATABASES = {
             'NAME' : 'Bet',
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
-                'host': 'mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false'
+                'host': 'mongodb://localhost:27017/bet?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false'
             }
         }
 }
@@ -117,7 +117,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

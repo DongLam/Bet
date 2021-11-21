@@ -10,3 +10,4 @@ class Match(models.Model):
     odds1 = models.DecimalField(max_digits=5, decimal_places=2)
     odds2 = models.DecimalField(max_digits=5, decimal_places=2)
     dateTimeStamp = models.DateTimeField(default=datetime.now, blank=True)
+    site = models.CharField(max_length=50, blank=True)

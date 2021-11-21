@@ -1,0 +1,11 @@
+# django
+__pycache__
+
+# user
+/.idea
+/logs
+/env/
+/app/
+/venv/
+/.vscode/
+local_settings.py
