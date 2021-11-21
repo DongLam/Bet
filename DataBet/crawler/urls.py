@@ -5,4 +5,3 @@ urlpatterns = [
     path('', views.Crawl.as_view()),
     path('lam', views.Lam.as_view()),
 ]
-

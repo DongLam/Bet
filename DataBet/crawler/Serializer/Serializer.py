@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from EGB.models import Match
+from crawler.models import Match
 
 
 class MatchSerializer(serializers.ModelSerializer):
@@ -10,4 +10,5 @@ class MatchSerializer(serializers.ModelSerializer):
                   'team2',
                   'odds1',
                   'odds2',
-                  'site')
+                  'site',
+                  'game')
