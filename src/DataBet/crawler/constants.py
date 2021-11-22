@@ -1,0 +1,5 @@
+EGB = 'EGB'
+BET_WINNER = 'BETWINNER'
+BET_WINNER_URL = 'https://betwinner.com/LiveFeed/Get1x2_VZip?sports=40&count=100&lng=en&mode=4&getEmpty=true&noFilterBlockEvent=true'
+TELE_BOT_TOKEN = '2116690014:AAESHuHCYk8N4rX-zcKM5O9eDmqmSg6nHO0'
+TELE_CHAT_ID = '-644075779'

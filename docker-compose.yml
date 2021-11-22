@@ -1,23 +1,38 @@
-version: "3.9"
+version: '3'
+
 services:
-mongodb:
-  environment:
-    MONGO_INITDB_DATABASE: mydatabase
-    MONGO_INITDB_ROOT_USERNAME: root
-    MONGO_INITDB_ROOT_PASSWORD: password
-  hostname: mongodb
-  image: mongo
-  ports:
-    - "27017:27017"
-  volumes: 
-    - ./data-mongodb:/data/db
-  
-api:
-  build: .
-  command: "python manage.py runserver 0.0.0.0:8000"
-  volumes:
-    - .:/code
-  ports:
-    - "8000:8000"
-  depends_on:
-    - mongodb
+  mongodb:
+      environment:
+        MONGO_INITDB_DATABASE: bet
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: 12345
+      hostname: mongodb
+      image: mongo
+      ports:
+        - "27017:27017"
+      volumes: 
+        - ./data-mongodb:/data/db
+
+  python:
+    restart: unless-stopped
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/DataBet/:/app/code
+    command: python /app/code/manage.py runserver 0:8000
+    depends_on:
+      - mongodb
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 3002:8080
+
+  redis:
+    image: redis:6.0-rc-buster
+    restart: unless-stopped
+    ports:
+      - "6379"
