@@ -60,73 +60,34 @@ class Trieu(APIView):
     def get(self, request):
         query = [
             {
-                '$project': {
-                    'timestamp': {
-                        '$subtract': [
-                            '$dateTimeStamp', datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-                        ]
-                    },
-                    'team1': '$team1',
-                    'team2': '$team2',
-                    'odds1': '$odds1',
-                    'odds2': '$odds2'
+                '$sort': {
+                    'team1': -1,
+                    'team2': -1,
+                    'dateTimeStamp': -1
                 }
             }, {
                 '$group': {
                     '_id': {
-                        'x': '$team1',
-                        'y': '$team2',
-                        'time': {
-                            '$round': [
-                                '$timestamp', -6
-                            ]
-                        }
+                        't1': '$team1',
+                        't2': '$team2',
+                        's': '$site'
                     },
-                    'a': {
-                        '$max': '$odds1'
-                    },
-                    'b': {
-                        '$max': '$odds2'
-                    },
-                    'c': {
-                        '$min': '$odds1'
-                    },
-                    'd': {
-                        '$min': '$odds2'
+                    'docs': {
+                        '$push': '$$ROOT'
                     }
                 }
             }, {
-                '$sort': {
-                    'a': 1
-                }
-            }, {
                 '$project': {
-                    'e': {
-                        '$multiply': [
-                            {
-                                '$subtract': [
-                                    '$a', 1
-                                ]
-                            }, {
-                                '$subtract': [
-                                    '$b', 1
-                                ]
-                            }
+                    'match': {
+                        '$slice': [
+                            '$docs', 1
                         ]
                     }
                 }
             }, {
-                '$match': {
-                    'e': {
-                        '$gt': 1
-                    },
-                    'dateTimeStamp': {
-                        '$gt': {
-                            '$subtract': [
-                                '$dateTimeStamp', datetime(1970, 0, 1, 0, 0, 30, tzinfo=timezone.utc)
-                            ]
-                        }
-                    }
+                '$sort': {
+                    'team1': -1,
+                    'team2': -1
                 }
             }
         ]
@@ -138,9 +99,17 @@ class Trieu(APIView):
         db = client["Bet"]
         # Get a reference to the "movies" collection:
         collection = db["EGB_match"]
-
+        list = []
         items = collection.aggregate(query)
         for item in items:
+            matchSerializer = MatchSerializer(data=item['match'][0])
+
+            if (matchSerializer.is_valid()):
+                list.append(str(matchSerializer.data))
+            else:
+                print(matchSerializer.errors)
+        list.sort()
+        for item in list:
             print(item)
         return HttpResponse(items)
 
