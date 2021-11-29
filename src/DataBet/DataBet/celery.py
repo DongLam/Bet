@@ -16,16 +16,20 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
 app.conf.beat_schedule = {
-    "crawler_egb": {
-        "task": "crawler.tasks.crawl_egb",
-        "schedule": crontab(minute='*/5')
-    },
+    # "crawler_bet_winner": {
+    #     "task": "crawler.tasks.crawl_bet_winner",
+    #     "schedule": crontab(minute='*/1')
+    # },
+    # "crawler": {
+    #     "task": "crawler.tasks.crawl_bet_winner",
+    #     "schedule": crontab(minute='*/1')
+    # },
+    # "detect_task": {
+    #     "task": "crawler.tasks.detect_task",
+    #     "schedule": crontab(minute='*/11')
+    # },
     "crawler_bet_winner": {
-        "task": "crawler.tasks.crawl_bet_winner",
-        "schedule": crontab(minute='*/3')
-    },
-    "detect_task": {
-        "task": "crawler.tasks.detect_task",
+        "task": "crawler.tasks.crawl_task",
         "schedule": crontab(minute='*/1')
     },
 }

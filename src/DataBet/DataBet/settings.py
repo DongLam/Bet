@@ -75,13 +75,14 @@ WSGI_APPLICATION = 'DataBet.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+DATABASE_HOST = 'mongodb://localhost:27017/bet?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false'
 DATABASES = {
         'default': {
             'ENGINE': 'djongo',
             'NAME' : 'Bet',
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
-                'host': 'mongodb://localhost:27017/bet?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false'
+                'host': DATABASE_HOST
             }
         }
 }
