@@ -69,7 +69,7 @@ def lam():
         query = [
             {
                 '$project': {
-                    'timestamp': {
+                    'time_dif': {
                         '$subtract': [
                             '$dateTimeStamp', datetime.now()
                         ]
@@ -78,19 +78,80 @@ def lam():
                     'team2': '$team2',
                     'odds1': '$odds1',
                     'odds2': '$odds2',
-                    'site': '$site',
-                    'game': '$game',
-                    'dateTimeStamp': '$dateTimeStamp',
-                    'team1_tmp': '$team1_tmp',
-                    'team2_tmp': '$team2_tmp',
+                    'site': '$site'
+                }
+            }, {
+                '$sort': {
+                    'time_dif': -1
                 }
             }, {
                 '$match': {
-                    'timestamp': {
-                        '$gt': -60000
+                    'time_dif': {
+                        '$gte': -99404800,
                     }
                 }
-            }
+            }, {
+                '$group': {
+                    '_id': {
+                        't1': '$team1',
+                        't2': '$team2'
+                    },
+                    'o1': {
+                        '$max': '$odds1'
+                    },
+                    'o2': {
+                        '$max': '$odds2'
+                    },
+                    'docs': {
+                        '$push': '$$ROOT'
+                    }
+                }
+            }, {
+                '$redact': {
+                    '$cond': {
+                        'if': {
+                            '$or': [
+                                {
+                                    '$eq': [
+                                        {
+                                            '$ifNull': [
+                                                '$odds1', '$$ROOT.o1'
+                                            ]
+                                        }, '$$ROOT.o1'
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        {
+                                            '$ifNull': [
+                                                '$odds2', '$$ROOT.o2'
+                                            ]
+                                        }, '$$ROOT.o2'
+                                    ]
+                                }
+                            ]
+                        },
+                        'then': '$$DESCEND',
+                        'else': '$$PRUNE'
+                    }
+                }
+            }, {
+                '$project': {
+                    'est': {
+                        '$multiply': [
+                            {
+                                '$subtract': [
+                                    '$o1', 1
+                                ]
+                            }, {
+                                '$subtract': [
+                                    '$o2', 1
+                                ]
+                            }
+                        ]
+                    },
+                    'docs': '$docs'
+                }
+            },
         ]
         MONGODB_URI = DATABASE_HOST
         # Connect to your MongoDB cluster:
@@ -98,26 +159,23 @@ def lam():
         # Get a reference to the "sample_mflix" database:
         db = client["Bet"]
         # Get a reference to the "movies" collection:
-        collection = db["crawler_match"]
+        collection = db["bet"]
         items = collection.aggregate(query)
 
         list = []
+        dem = 0
         for item in items:
-            matchSerializer = MatchSerializer(data=item)
-            if matchSerializer.is_valid():
-                list.append(matchSerializer.data)
-        list = sorted(list, key=lambda d: (d['game'], d['team1_tmp']), reverse=True)
+            if(dem == 0):
+                print(item)
+                print(1111111111111111111)
+                dem = dem + 1
+            print(item['_id'])
+            print(item['est'])
+            for i in item['docs']:
+                matchSerializer = MatchSerializer(data=i)
+                if matchSerializer.is_valid():
+                    print(str(matchSerializer.data))
 
-        lam = []
-        for i in range(0, len(list) - 1):
-            if list[i]['team2_tmp'] == list[i+1]['team2_tmp'] and list[i]['site'] != list[i+1]['site']:
-                lam.append(list[i])
-                lam.append(list[i+1])
 
-        message = ''
-        for result in lam:
-            message = message + str(result) + '\n'
-        # send_message(message)
-        print(message)
     except Exception as e:
         print(e)
