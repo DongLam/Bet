@@ -121,3 +121,134 @@ def lam():
         print(message)
     except Exception as e:
         print(e)
+
+def detect_exception():
+    try:
+        query = [
+            {
+                '$project': {
+                    'time_dif': {
+                        '$subtract': [
+                            '$dateTimeStamp', datetime.now()
+                        ]
+                    },
+                    'team1': '$team1',
+                    'team2': '$team2',
+                    'odds1': '$odds1',
+                    'odds2': '$odds2',
+                    'site': '$site',
+                    'game': '$game'
+                }
+            }, {
+                '$sort': {
+                    'time_dif': -1
+                }
+            }, {
+                '$match': {
+                    'time_dif': {
+                        '$gte': -30000,
+                    }
+                }
+            }, {
+                '$group': {
+                    '_id': {
+                        't1': '$team1',
+                        't2': '$team2'
+                    },
+                    'o1': {
+                        '$max': '$odds1'
+                    },
+                    'o2': {
+                        '$max': '$odds2'
+                    },
+                    'docs': {
+                        '$push': '$$ROOT'
+                    }
+                }
+            }, {
+                '$redact': {
+                    '$cond': {
+                        'if': {
+                            '$or': [
+                                {
+                                    '$eq': [
+                                        {
+                                            '$ifNull': [
+                                                '$odds1', '$$ROOT.o1'
+                                            ]
+                                        }, '$$ROOT.o1'
+                                    ]
+                                }, {
+                                    '$eq': [
+                                        {
+                                            '$ifNull': [
+                                                '$odds2', '$$ROOT.o2'
+                                            ]
+                                        }, '$$ROOT.o2'
+                                    ]
+                                }
+                            ]
+                        },
+                        'then': '$$DESCEND',
+                        'else': '$$PRUNE'
+                    }
+                }
+            }, {
+                '$project': {
+                    'est': {
+                        '$multiply': [
+                            {
+                                '$subtract': [
+                                    '$o1', 1
+                                ]
+                            }, {
+                                '$subtract': [
+                                    '$o2', 1
+                                ]
+                            }
+                        ]
+                    },
+                    'docs': '$docs'
+                }
+            }, {
+                '$match': {
+                    'est': {
+                        '$gt': 1
+                    }
+                }
+            }
+        ]
+        MONGODB_URI = DATABASE_HOST
+        # Connect to your MongoDB cluster:
+        client = pymongo.MongoClient(MONGODB_URI)
+        db = client["Bet"]
+        collection = db["crawler_match"]
+        items = collection.aggregate(query)
+
+        list_result = []
+        dem = 0
+        for item in items:
+            if (dem == 0):
+                print(item)
+                dem = dem + 1
+            for i in item['docs']:
+                matchSerializer = MatchSerializer(data=i)
+                if matchSerializer.is_valid() and len(list_result) > 1:
+                    tmp = list_result[-1]
+                    if matchSerializer['team1'] == tmp['team1'] and matchSerializer['team2'] == tmp['team2'] and matchSerializer['site'] == tmp['site']:
+                        list_result.pop()
+                    else:
+                        list_result.append(str(matchSerializer.data))
+        message = ''
+        for result in list_result:
+            message = message + str(result) + '\n'
+        if len(message) > 0:
+            send_message(message)
+        print('Done Detect')
+
+    except Exception as e:
+        print(e)
+
+def format_msg(team1, team2, game, site):
+    msg = 'Site: ' + site + 'Match: ' + team1 + '-' + team2 + ', Game: ' + game
+    return msg

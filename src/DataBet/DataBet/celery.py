@@ -28,7 +28,7 @@ app.conf.beat_schedule = {
     #     "task": "crawler.tasks.detect_task",
     #     "schedule": crontab(minute='*/11')
     # },
-    "crawler_bet_winner": {
+    "crawl_task": {
         "task": "crawler.tasks.crawl_task",
         "schedule": crontab(minute='*/1')
     },
