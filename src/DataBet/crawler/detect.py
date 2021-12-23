@@ -17,8 +17,8 @@ def detect():
         }, {
             '$group': {
                 '_id': {
-                    't1': '$team1',
-                    't2': '$team2',
+                    't1': '$team1_tmp',
+                    't2': '$team2_tmp',
                     's': '$site',
                     'dt': '$dateTimeStamp'
                 },
@@ -36,8 +36,8 @@ def detect():
             }
         }, {
             '$sort': {
-                'team1': -1,
-                'team2': -1
+                'team1_tmp': -1,
+                'team2_tmp': -1
             }
         }
     ]
@@ -152,8 +152,8 @@ def detect_exception():
             }, {
                 '$group': {
                     '_id': {
-                        't1': '$team1',
-                        't2': '$team2'
+                        't1': '$team1_tmp',
+                        't2': '$team2_tmp'
                     },
                     'o1': {
                         '$max': '$odds1'
