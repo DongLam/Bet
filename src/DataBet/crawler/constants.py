@@ -1,22 +1,24 @@
 EGB = 'EGB'
 BET_WINNER = 'BETWINNER'
 PS38 = 'PS38'
-BET_WINNER_URL = 'https://betwinner1.com/LineFeed/Get1x2_VZip?sports=40&count=100&lng=us&tf=2200000&mode=4&country=43&partner=152&getEmpty=true'
+BET_WINNER_URL = 'https://betwinner1.com/LineFeed/Get1x2_VZip?sports=40&count=1000&lng=us&tf=2200000&mode=4&country=43&partner=152&getEmpty=true'
 TELE_BOT_TOKEN = '2116690014:AAESHuHCYk8N4rX-zcKM5O9eDmqmSg6nHO0'
 PS38_URL = 'https://www.ps3838.com/sports-service/sv/compact/events?l=3&lv=&me=0&mk=1&sp=12&locale=en_US'
 TELE_CHAT_ID = '-644075779'
 
 BW_CSGO = 'CS:GO'
 BW_LOL = 'LOL'
+BW_LOL2 = 'League of Legends'
 BW_STAR_CRAFT = 'StarCraft II'
 BW_DOTA2 = 'Dota 2'
 BW_KOG = 'King of Glory'
+BW_KOG2 = 'King Of Glory'
 BW_VAL = 'Valorant'
 BW_PUBG = 'PUBG'
 BW_AOR = 'Arena of Valor'
 
 EGB_CSGO = 'CS:GO'
-EGB_LOL = 'LOL'
+EGB_LOL = 'LoL'
 EGB_STAR_CRAFT = 'StarCraft2'
 EGB_DOTA2 = 'Dota 2'
 EGB_KOG = 'KingOfGlory'
@@ -41,3 +43,8 @@ PS38_KOG = 'King of Glory'
 PS38_VAL = 'Valorant'
 PS38_PUBG = 'PUBG'
 PS38_AOR = 'ArenaOfValor'
+
+MANUAL_NAME = [['LDLCOL', 'LDLC'], ['UNICORNSOFLOVESEXYED', 'UNICORNSOFLOVESE'], ['NINJASINPYJAMAS', 'NIP'],
+               ['GANK', 'GK'], ['DREAMERS', 'DREAMER'], ['INF.U', 'INFAMOUS'], ['APUKINGOFKINGS', 'KINGOFKINGS'],
+               ['OMEGAGAMING', 'OG'], ['GAIMINGGLADIATORS', 'GLADIATORS'], ['SUSQUEHANNASONIQS', 'SONIQS'],
+               ['SOLOMID', 'TSM'], ['SOLOMIDACADEMY', 'TSMACADEMY']]

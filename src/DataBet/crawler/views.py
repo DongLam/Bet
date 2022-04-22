@@ -14,7 +14,7 @@ from crawler.tele_bot import send_message
 
 class Crawl(APIView):
     def get(self, request):
-        url = "https://egb.com/bets?st=0&ut=0"
+        url = "https://egb.com/bets?st=0&ut=0&active=true"
         response = requests.get(url, headers={"Accept": "application/json"})
         bets = response.json()['bets']
         matches = []
@@ -44,6 +44,8 @@ class Lam(APIView):
         bets = response.json()['Value']
         matches = []
         for bet in bets:
+            if len(bet['E']) < 2:
+                continue
             if bet['L'] and 'CS:GO' in bet['L']:
                 match = {
                     'team1': bet['O1'],
@@ -59,6 +61,7 @@ class Lam(APIView):
 
                 if matchSerializer.is_valid():
                     matchSerializer.save()
+        return HttpResponse(1)
 
 
 def get_data_bet_winner():
@@ -75,72 +78,54 @@ def get_data_bet_winner():
 
 
 class Trieu(APIView):
+    def post(self, request):
+
+        from .tasks import crawl_task
+        crawl_task()
+        return HttpResponse(2)
+
+
+
     def get(self, request):
+        from crawler.craw import send_notice
+        send_notice()
+
+        return HttpResponse(1)
+
+    def put(self, request):
         query = [
-            {
-                '$project': {
-                    'timestamp': {
-                        '$subtract': [
-                            '$dateTimeStamp', datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-                        ]
-                    },
-                    'team1': '$team1',
-                    'team2': '$team2',
-                    'odds1': '$odds1',
-                    'odds2': '$odds2',
-                    't': {
-                        '$subtract': [
-                            datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
-                            datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-                        ]
-                    }
-                }
-            }, {
-                '$group': {
-                    '_id': {
-                        'x': '$team1',
-                        'y': '$team2',
-                        'time': {
-                            '$round': [
-                                '$timestamp', -6
-                            ]
+                    {
+                        '$sort': {
+                            'team1': -1,
+                            'team2': -1,
+                            'dateTimeStamp': -1
                         }
-                    },
-                    'a': {
-                        '$max': '$odds1'
-                    },
-                    'b': {
-                        '$max': '$odds2'
-                    },
-                    'c': {
-                        '$min': '$odds1'
-                    },
-                    'd': {
-                        '$min': '$odds2'
-                    }
-                }
-            }, {
-                '$sort': {
-                    'a': 1
-                }
-            }, {
-                '$project': {
-                    'e': {
-                        '$multiply': [
-                            {
-                                '$subtract': [
-                                    '$a', 1
-                                ]
-                            }, {
-                                '$subtract': [
-                                    '$b', 1
-                                ]
+                    }, {
+                        '$group': {
+                            '_id': {
+                                't1': '$team1_tmp',
+                                't2': '$team2_tmp',
+                                # 's': '$site'
+                            },
+                            'docs': {
+                                '$push': '$$ROOT'
                             }
-                        ]
+                        }
+                    # }, {
+                    #     '$project': {
+                    #         'match': {
+                    #             '$slice': [
+                    #                 '$docs', 1
+                    #             ]
+                    #         }
+                    #     }
+                    # }, {
+                    #     '$sort': {
+                    #         'team1': -1,
+                    #         'team2': -1
+                    #     }
                     }
-                }
-            }
-        ]
+                ]
 
         MONGODB_URI = "mongodb://localhost:27017/bet?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false"
         # Connect to your MongoDB cluster:
@@ -151,6 +136,26 @@ class Trieu(APIView):
         collection = db["crawler_match"]
 
         items = collection.aggregate(query)
+        arr = []
+        dem3 = 0
+        dem2 = 0
+        dem1 = 0
+        demegb = 0
         for item in items:
-            print(item)
-        return HttpResponse(items)
+
+            if len(item['docs']) == 1:
+
+                dem1 = dem1 + 1
+                if item['docs'][0]['site'] == 'PS38':
+                    arr.append(item)
+                    demegb = demegb + 1
+                    print(item['docs'][0]['team1_tmp'], item['docs'][0]['team2_tmp'])
+            if len(item['docs']) == 2:
+                dem2 = dem2 + 1
+            if len(item['docs']) > 2:
+                dem3 = dem3 + 1
+
+
+
+        print(dem1, dem2, dem3, demegb)
+        return HttpResponse(arr)
