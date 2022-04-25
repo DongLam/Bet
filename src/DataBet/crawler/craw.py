@@ -130,79 +130,103 @@ def ps38(timeStamp):
 
 def send_notice():
      query = [
-          {
-               '$project': {
-                    'timestamp': {
-                         '$subtract': [
+              {
+                  '$project': {
+                      'timestamp': {
+                          '$subtract': [
                               '$dateTimeStamp', datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-                         ]
-                    },
-                    'team1': '$team1_tmp',
-                    'team2': '$team2_tmp',
-                    'game': '$game',
-                    'odds1': '$odds1',
-                    'odds2': '$odds2',
-                    't': {
-                         '$subtract': [
-                              datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
-                              datetime(1970, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-                         ]
-                    }
-               }
-          }, {
-               '$group': {
-                    '_id': {
-                         'x': '$team1',
-                         'y': '$team2',
-                         'z': '$game',
-
-                         'time': {
+                          ]
+                      },
+                      'team1': '$team1',
+                      'team2': '$team2',
+                      'team1_tmp': '$team1_tmp',
+                      'team2_tmp': '$team2_tmp',
+                      'game': '$game',
+                      'odds1': '$odds1',
+                      'odds2': '$odds2',
+                      'site': '$site'
+                  }
+              }, {
+                  '$group': {
+                      '_id': {
+                          'x': '$team1_tmp',
+                          'y': '$team2_tmp',
+                          'z': '$game',
+                          'time': {
                               '$round': [
-                                   '$timestamp', -6
+                                  '$timestamp', -6
                               ]
-                         }
-                    },
-                    'a': {
-                         '$max': '$odds1'
-                    },
-                    'b': {
-                         '$max': '$odds2'
-                    },
-                    'c': {
-                         '$min': '$odds1'
-                    },
-                    'd': {
-                         '$min': '$odds2'
-                    }
-               }
-          }, {
-               '$sort': {
-                    'a': 1
-               }
-          }, {
-               '$project': {
-                    'e': {
-                         '$multiply': [
+                          }
+                      },
+                      'a': {
+                          '$max': '$odds1'
+                      },
+                      'b': {
+                          '$max': '$odds2'
+                      },
+                      'c': {
+                          '$min': '$odds1'
+                      },
+                      'd': {
+                          '$min': '$odds2'
+                      },
+                      'sites': {
+                          '$addToSet': '$site'
+                      },
+                      'docs': {
+                          '$push': '$$ROOT'
+                      }
+                  }
+              }, {
+                  '$project': {
+                      'a': 1,
+                      'b': 1,
+                      'c': 1,
+                      'd': 1,
+                      'numbersOfSite': {
+                          '$size': '$sites'
+                      },
+                      'sites': 1,
+                      'docs': 1
+                  }
+              }, {
+                  '$sort': {
+                      'a': 1
+                  }
+              }, {
+                  '$match': {
+                      'numbersOfSite': {
+                          '$gt': 1
+                      }
+                  }
+              }, {
+                  '$project': {
+                      'e': {
+                          '$multiply': [
                               {
-                                   '$subtract': [
-                                        '$a', 1
-                                   ]
+                                  '$subtract': [
+                                      '$a', 1
+                                  ]
                               }, {
-                                   '$subtract': [
-                                        '$b', 1
-                                   ]
+                                  '$subtract': [
+                                      '$b', 1
+                                  ]
                               }
-                         ]
-                    },
-                    'odd1': '$a',
-                    'odd2': '$b'
-               }
-          }, {
-               '$match': {
-                    'e': {'$gt': 1.1}
-               }
-          }
-     ]
+                          ]
+                      },
+                      'a': 1,
+                      'b': 1,
+                      'c': 1,
+                      'd': 1,
+                      'sites': 1,
+                      'docs': 1
+                  }
+              }, {
+                  '$sort': {
+                      'e': -1
+                  }
+              }
+          ]
 
      MONGODB_URI = "mongodb://localhost:27017/bet?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false"
      # Connect to your MongoDB cluster:
@@ -214,73 +238,78 @@ def send_notice():
 
      items = collection.aggregate(query)
      for item in items:
-          team1 = item['_id']['x']
-          team2 = item['_id']['y']
+          arrays = item['docs']
           value = item['e']
-          query2 = [
-               {
-                    '$match': {
-                         'team1_tmp': team1,
-                         'team2_tmp': team2,
-                    }
-               }
-          ]
-          teams = collection.aggregate(query2)
-          max_odd1 = item['odd1']
-          max_odd2 = item['odd2']
+          str_send = "game: " + item['_id']['z'] + " value = " + str(value) + "\n"
+          for i in arrays:
+               str_send = str_send + i['site'] +':\n\t ' + data_to_string(i) + "\n"
 
-          check_egb = 0
-          check_betwinner = 0
-          check_ps38 = 0
-          data = {}
-          for i in teams:
-               if i['site'] == 'EGB':
-                    if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
-                         data['egb'] = {}
-                         check_egb = 1
-                         data['egb']['team1'] = i['team1']
-                         data['egb']['team2'] = i['team2']
-                         if str(i['odds1']) >= str(max_odd1):
-                              data['egb']['odd1'] = i['odds1']
-                         else:
-                              data['egb']['odd2'] = i['odds2']
-
-               if i['site'] == 'BETWINNER':
-                    if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
-                         data['betwinner'] = {}
-                         check_betwinner = 1
-                         data['betwinner']['team1'] = i['team1']
-                         data['betwinner']['team2'] = i['team2']
-                         if str(i['odds1']) >= str(max_odd1):
-                              data['betwinner']['odd1'] = i['odds1']
-                         else:
-                              data['betwinner']['odd2'] = i['odds2']
-
-               if i['site'] == 'PS38':
-                    if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
-                         data['ps38'] = {}
-                         check_ps38 = 1
-                         data['ps38']['team1'] = i['team1']
-                         data['ps38']['team2'] = i['team2']
-                         if str(i['odds1']) >= str(max_odd1):
-                              data['ps38']['odd1'] = i['odds1']
-                         else:
-                              data['ps38']['odd2'] = i['odds2']
-
-
-
-          if check_egb + check_betwinner + check_ps38 > 1:
-
-               str_send = "game: " + item['_id']['z'] + " value = " + str(value) + "\n"
-               if data.get('egb') is not None:
-                    str_send = str_send + 'EGB:\n\t ' + data_to_string(data['egb']) + "\n"
-               if data.get('betwinner') is not None:
-                    str_send = str_send + 'BETWINNER:\n\t ' + data_to_string(data['betwinner']) + "\n"
-               if data.get('ps38') is not None:
-                    str_send = str_send + 'PS38:\n\t ' + data_to_string(data['ps38']) + "\n"
-
-               send_message(str_send)
-               print(str_send)
+          # send_message(str_send)
+          print(str_send)
+          # query2 = [
+          #      {
+          #           '$match': {
+          #                'team1_tmp': team1,
+          #                'team2_tmp': team2,
+          #           }
+          #      }
+          # ]
+          # teams = collection.aggregate(query2)
+          # max_odd1 = item['odd1']
+          # max_odd2 = item['odd2']
+          #
+          # check_egb = 0
+          # check_betwinner = 0
+          # check_ps38 = 0
+          # data = {}
+          # for i in teams:
+          #      if i['site'] == 'EGB':
+          #           if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
+          #                data['egb'] = {}
+          #                check_egb = 1
+          #                data['egb']['team1'] = i['team1']
+          #                data['egb']['team2'] = i['team2']
+          #                if str(i['odds1']) >= str(max_odd1):
+          #                     data['egb']['odd1'] = i['odds1']
+          #                else:
+          #                     data['egb']['odd2'] = i['odds2']
+          #
+          #      if i['site'] == 'BETWINNER':
+          #           if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
+          #                data['betwinner'] = {}
+          #                check_betwinner = 1
+          #                data['betwinner']['team1'] = i['team1']
+          #                data['betwinner']['team2'] = i['team2']
+          #                if str(i['odds1']) >= str(max_odd1):
+          #                     data['betwinner']['odd1'] = i['odds1']
+          #                else:
+          #                     data['betwinner']['odd2'] = i['odds2']
+          #
+          #      if i['site'] == 'PS38':
+          #           if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
+          #                data['ps38'] = {}
+          #                check_ps38 = 1
+          #                data['ps38']['team1'] = i['team1']
+          #                data['ps38']['team2'] = i['team2']
+          #                if str(i['odds1']) >= str(max_odd1):
+          #                     data['ps38']['odd1'] = i['odds1']
+          #                else:
+          #                     data['ps38']['odd2'] = i['odds2']
+          #
+          #
+          #
+          # if check_egb + check_betwinner + check_ps38 > 1:
+          #
+          #      str_send = "game: " + item['_id']['z'] + " value = " + str(value) + "\n"
+          #      if data.get('egb') is not None:
+          #           str_send = str_send + 'EGB:\n\t ' + data_to_string(data['egb']) + "\n"
+          #      if data.get('betwinner') is not None:
+          #           str_send = str_send + 'BETWINNER:\n\t ' + data_to_string(data['betwinner']) + "\n"
+          #      if data.get('ps38') is not None:
+          #           str_send = str_send + 'PS38:\n\t ' + data_to_string(data['ps38']) + "\n"
+          #
+          #      send_message(str_send)
+          #      print(str_send)
 
 def data_to_string(data):
      string = "team1: " + data['team1'] + ", team2: " + data['team2']

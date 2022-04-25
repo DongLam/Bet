@@ -146,7 +146,7 @@ class Trieu(APIView):
             if len(item['docs']) == 1:
 
                 dem1 = dem1 + 1
-                if item['docs'][0]['site'] == 'PS38':
+                if item['docs'][0]['site'] == 'EGB':
                     arr.append(item)
                     demegb = demegb + 1
                     print(item['docs'][0]['team1_tmp'], item['docs'][0]['team2_tmp'])
