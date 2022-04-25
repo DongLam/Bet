@@ -221,6 +221,12 @@ def send_notice():
                       'sites': 1,
                       'docs': 1
                   }
+              },{
+                  '$match': {
+                      'e': {
+                          '$gt': 1.1
+                      }
+                  }
               }, {
                   '$sort': {
                       'e': -1
@@ -249,10 +255,10 @@ def send_notice():
 
 def data_to_string(data):
      string = "team1: " + data['team1'] + ", team2: " + data['team2']
-     if data.get('odd1') is not None:
-          string = string + ', odd1: ' + str(data.get('odd1'))
-     if data.get('odd2') is not None:
-          string = string + ', odd2: ' + str(data.get('odd2'))
+     if data.get('odds1') is not None:
+          string = string + ', odds1: ' + str(data.get('odds1'))
+     if data.get('odds2') is not None:
+          string = string + ', odds2: ' + str(data.get('odds2'))
      return string
 
 def change_name_to_tmp(team):
