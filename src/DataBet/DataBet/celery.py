@@ -30,8 +30,12 @@ app.conf.beat_schedule = {
     # },
     "crawl_task": {
         "task": "crawler.tasks.crawl_task",
-        "schedule": crontab(minute='*/1')
+        "schedule": crontab(minute='*/2')
     },
+    # "send_notice": {
+    #     "task": "crawler.tasks.send_notice_task",
+    #     "schedule": crontab(minute='*/9')
+    # },
 }
 
 # Load task modules from all registered Django app configs.
