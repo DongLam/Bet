@@ -244,72 +244,8 @@ def send_notice():
           for i in arrays:
                str_send = str_send + i['site'] +':\n\t ' + data_to_string(i) + "\n"
 
-          # send_message(str_send)
+          send_message(str_send)
           print(str_send)
-          # query2 = [
-          #      {
-          #           '$match': {
-          #                'team1_tmp': team1,
-          #                'team2_tmp': team2,
-          #           }
-          #      }
-          # ]
-          # teams = collection.aggregate(query2)
-          # max_odd1 = item['odd1']
-          # max_odd2 = item['odd2']
-          #
-          # check_egb = 0
-          # check_betwinner = 0
-          # check_ps38 = 0
-          # data = {}
-          # for i in teams:
-          #      if i['site'] == 'EGB':
-          #           if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
-          #                data['egb'] = {}
-          #                check_egb = 1
-          #                data['egb']['team1'] = i['team1']
-          #                data['egb']['team2'] = i['team2']
-          #                if str(i['odds1']) >= str(max_odd1):
-          #                     data['egb']['odd1'] = i['odds1']
-          #                else:
-          #                     data['egb']['odd2'] = i['odds2']
-          #
-          #      if i['site'] == 'BETWINNER':
-          #           if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
-          #                data['betwinner'] = {}
-          #                check_betwinner = 1
-          #                data['betwinner']['team1'] = i['team1']
-          #                data['betwinner']['team2'] = i['team2']
-          #                if str(i['odds1']) >= str(max_odd1):
-          #                     data['betwinner']['odd1'] = i['odds1']
-          #                else:
-          #                     data['betwinner']['odd2'] = i['odds2']
-          #
-          #      if i['site'] == 'PS38':
-          #           if str(i['odds1']) >= str(max_odd1) or str(i['odds2']) >= str(max_odd2):
-          #                data['ps38'] = {}
-          #                check_ps38 = 1
-          #                data['ps38']['team1'] = i['team1']
-          #                data['ps38']['team2'] = i['team2']
-          #                if str(i['odds1']) >= str(max_odd1):
-          #                     data['ps38']['odd1'] = i['odds1']
-          #                else:
-          #                     data['ps38']['odd2'] = i['odds2']
-          #
-          #
-          #
-          # if check_egb + check_betwinner + check_ps38 > 1:
-          #
-          #      str_send = "game: " + item['_id']['z'] + " value = " + str(value) + "\n"
-          #      if data.get('egb') is not None:
-          #           str_send = str_send + 'EGB:\n\t ' + data_to_string(data['egb']) + "\n"
-          #      if data.get('betwinner') is not None:
-          #           str_send = str_send + 'BETWINNER:\n\t ' + data_to_string(data['betwinner']) + "\n"
-          #      if data.get('ps38') is not None:
-          #           str_send = str_send + 'PS38:\n\t ' + data_to_string(data['ps38']) + "\n"
-          #
-          #      send_message(str_send)
-          #      print(str_send)
 
 def data_to_string(data):
      string = "team1: " + data['team1'] + ", team2: " + data['team2']
