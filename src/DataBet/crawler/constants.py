@@ -3,8 +3,10 @@ BET_WINNER = 'BETWINNER'
 PS38 = 'PS38'
 BET_WINNER_URL = 'https://betwinner1.com/LineFeed/Get1x2_VZip?sports=40&count=1000&lng=us&tf=2200000&mode=4&country=43&partner=152&getEmpty=true'
 TELE_BOT_TOKEN = '2116690014:AAESHuHCYk8N4rX-zcKM5O9eDmqmSg6nHO0'
+DISCORD_BOT_TOKEN = "NDE4NDM0OTMxMTI4MDA4NzI0.G8LdOl.lxbj6ATePyB1DaYbzoF5xk7nermNreAskceI9o"
 PS38_URL = 'https://www.ps3838.com/sports-service/sv/compact/events?l=3&lv=&me=0&mk=1&sp=12&locale=en_US'
 TELE_CHAT_ID = '-644075779'
+DISCORD_CHAT_LINK = 'https://discord.com/api/v9/channels/973784081336795179/messages'
 
 BW_CSGO = 'CS:GO'
 BW_LOL = 'LOL'
@@ -48,5 +50,6 @@ MANUAL_NAME = [['LDLCOL', 'LDLC'], ['UNICORNSOFLOVESEXYED', 'UNICORNSOFLOVESE'],
                ['GANK', 'GK'], ['DREAMERS', 'DREAMER'], ['INF.U', 'INFAMOUS'], ['APUKINGOFKINGS', 'KINGOFKINGS'],
                ['OMEGAGAMING', 'OG'], ['GAIMINGGLADIATORS', 'GLADIATORS'], ['SUSQUEHANNASONIQS', 'SONIQS'],
                ['SOLOMID', 'TSM'], ['SOLOMIDACADEMY', 'TSMACADEMY'], ['UNICORNSOFLOVESEXYEDITION', 'UNICORNSOFLOVESE'],
-               ['DYNAMOECLOT','ECLOT']]
+               ['DYNAMOECLOT', 'ECLOT'], ['BETBOOM', 'BB'], ['HITBOXHIROS', 'HITBOX'], ['SISSISTATEPUNKS', 'SSP'],
+               ['TES.REYNOR', 'REYNOR']]
 

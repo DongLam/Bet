@@ -5,7 +5,7 @@ import pymongo
 from crawler import constants
 from crawler.Serializer.Serializer import MatchSerializer
 from crawler.constants import *
-from crawler.tele_bot import send_message
+from crawler.discord_bot import send_message
 
 
 def egb(timeStamp):
@@ -64,7 +64,8 @@ def bet_winner(timeStamp):
                               'game': game,
                               'dateTimeStamp': timeStamp,
                               'team1_tmp': change_name_to_tmp(bet['O1']),
-                              'team2_tmp': change_name_to_tmp(bet['O2'])
+                              'team2_tmp': change_name_to_tmp(bet['O2']),
+                              'league': bet['L']
                          }
                          match = sort_team_name(match)
                          matchSerializer = MatchSerializer(data=match)
@@ -144,7 +145,8 @@ def send_notice():
                       'game': '$game',
                       'odds1': '$odds1',
                       'odds2': '$odds2',
-                      'site': '$site'
+                      'site': '$site',
+                      'league': 1
                   }
               }, {
                   '$group': {
@@ -250,8 +252,10 @@ def send_notice():
           for i in arrays:
                str_send = str_send + i['site'] +':\n\t ' + data_to_string(i) + "\n"
 
-          send_message(str_send)
+          str_send = str_send + '--------------------------'
           print(str_send)
+          send_message(str_send)
+
 
 def data_to_string(data):
      string = "team1: " + data['team1'] + ", team2: " + data['team2']
@@ -259,6 +263,8 @@ def data_to_string(data):
           string = string + ', odds1: ' + str(data.get('odds1'))
      if data.get('odds2') is not None:
           string = string + ', odds2: ' + str(data.get('odds2'))
+     if data['site'] == 'BETWINNER':
+         string = string + ', league: ' + data['league']
      return string
 
 def change_name_to_tmp(team):
